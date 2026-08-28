@@ -16,7 +16,8 @@ async function filesIn(directory) {
 const outputPath = outputDir.pathname;
 const generatedFiles = (await filesIn(outputPath))
   .map((file) => `/${relative(outputPath, file).replaceAll('\\', '/')}`)
-  .filter((file) => file !== '/sw.js' && !file.endsWith('.map'))
+  // Azure Static Web Apps consumes this configuration file but intentionally does not serve it.
+  .filter((file) => file !== '/sw.js' && file !== '/staticwebapp.config.json' && !file.endsWith('.map'))
   .sort();
 const appShell = [...new Set(['/', '/privacy/', '/terms/', ...generatedFiles])];
 const hash = createHash('sha256');

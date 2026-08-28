@@ -11,4 +11,9 @@ describe('static deployment cache policy', () => {
     expect(assetRoute?.headers['Cache-Control']).toBe('public, max-age=31536000, immutable');
     expect(serviceWorkerRoute?.headers['Cache-Control']).toContain('no-cache');
   });
+
+  it('does not precache hosting-only configuration that Azure does not expose as a response', async () => {
+    const generator = await readFile(new URL('../scripts/build-sw.mjs', import.meta.url), 'utf8');
+    expect(generator).toContain("file !== '/staticwebapp.config.json'");
+  });
 });
