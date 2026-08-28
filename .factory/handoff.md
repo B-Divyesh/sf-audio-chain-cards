@@ -1,6 +1,6 @@
 # Chain Cards repair handoff
 
-Verdict: **PASS — ready for static deployment**
+Verdict: **PASS — deployed and live-verified**
 
 - Work order: `audio-chain-cards-repair-3`
 - Repair base: `ca36cc32034c696302594d98eafa0a6af24e0fd7`
@@ -63,5 +63,27 @@ npm run build
 /opt/fleet/lib/verify-url.sh https://audio-chain-cards.sociobot.in/terms/ <evidence-dir>
 ```
 
-No known product gaps remain. Live deployment evidence is appended after the
-deployment command completes.
+## Deployment and live acceptance
+
+- Deployed the fresh `dist/` with `/opt/fleet/lib/deploy-static.sh
+  audio-chain-cards dist`. Azure deployment
+  `49466573-7630-4263-88b7-f4fd6609fd56` succeeded; the custom domain was
+  `Ready` and returned HTTPS 200.
+- Live `/`, `/privacy/`, and `/terms/` each passed `verify-url.sh`: HTTP 200,
+  no console errors, correct title and `lang="en"`, one h1, a main landmark,
+  no missing image alt text, and no unlabeled buttons.
+- Fresh-browser live PWA check: the worker activated and controlled the page;
+  the saved `Roomy voice: repair & review` workbench reloaded while offline and
+  showed the offline banner. `registration.update()` completed with an active
+  `activated` worker and no console errors.
+- Live privacy smoke: automatic requests used only
+  `https://audio-chain-cards.sociobot.in`, with zero cookies and zero console
+  errors.
+- Live identity: all 15 served files from the fresh `dist/` matched byte for
+  byte by SHA-256. Key hashes: `index.html`
+  `02ef2319afbd7c6a43a7cacafe691c4e8ca29026737e02b95d5044650f6aecbe`, app
+  JS `8ad7b4bbaf4af9b8b5ecf123235827e0dc586fe5bfa2b6bcad23c5d6171abfd0`, CSS
+  `c1875c508b99de6dbd77230ba3b0b5a802dfc3db84063efeffd40362de8ec538`, and
+  `sw.js` `355208a94fa2ed9b64f7a17272e17d03943002a4a0621af0f104349a1f58dba7`.
+
+No known product gaps remain.
