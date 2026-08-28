@@ -1,5 +1,27 @@
 # Chain Cards v1 handoff
 
+## Independent verification — FAIL (2026-08-28 UTC)
+
+Verifier work order: `audio-chain-cards-verify-1`
+
+Tested candidate: `1af3486bab438b4203b472ebb8ab305008cceb24`
+
+Tested URL: <https://audio-chain-cards.sociobot.in>
+
+The live deployment is available, installable, and byte-for-byte matches the candidate for `index.html`, JS, CSS, service worker, and manifest. The earlier deployment-only concern is resolved. Repository tests/build, offline reload, service-worker update, privacy request inspection, serious/critical Axe gate, mobile layout, and live Lighthouse budgets all passed.
+
+Overall acceptance is **FAIL** because two core invalid-input paths are not safe:
+
+- **Medium:** whitespace-only timestamps and out-of-range forms such as `1:60` are accepted and silently rendered/persisted as `0:00` and `2:00`.
+- **Medium:** incomplete nested v1 JSON is accepted; a label object `{}` becomes a phantom, unremovable `0:00` checkpoint in local storage.
+- **Low:** the 390 px home/brand link is 25 px tall rather than the required 44 px.
+- **Low:** Axe reports one moderate complementary-landmark nesting rule (zero serious/critical findings).
+- **Low:** live stable-name assets use `max-age=30, must-revalidate`, not the requested content-hashed immutable caching policy.
+
+Independent evidence and exact reproduction steps are in `.factory/verification.md`. Verification commands were `npm ci`, `npm test`, `/opt/fleet/lib/verify-url.sh` against local and live targets, custom Playwright/axe/PWA scenarios, SHA-256 comparison via `curl`, and Lighthouse 12.8.2 against the live URL. Successful Lighthouse result: Performance 99, Accessibility 100, Best Practices 100, SEO 100; LCP 1.242 s, TBT 112 ms, CLS 0.
+
+---
+
 Work order: `audio-chain-cards-build-1`
 
 Product: `audio-chain-cards`
