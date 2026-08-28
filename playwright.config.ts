@@ -12,9 +12,11 @@ export default defineConfig({
     screenshot: 'only-on-failure'
   },
   webServer: {
-    command: 'npm run preview',
+    // E2E must exercise the freshly built PWA. A dev server does not model
+    // the emitted service worker or its generated precache.
+    command: 'npm run preview -- --strictPort',
     url: 'http://127.0.0.1:4173',
-    reuseExistingServer: true
+    reuseExistingServer: false
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },

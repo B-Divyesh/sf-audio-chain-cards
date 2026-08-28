@@ -1,5 +1,23 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+/**
+ * A worker activated after the initial navigation need not control that first
+ * document. Waiting for activation, then navigating once, is deterministic on
+ * both desktop Chromium and the Pixel 5 emulation and catches a preview that
+ * was accidentally started without the built worker.
+ */
+async function controlPageWithBuiltServiceWorker(page: Page): Promise<void> {
+  await expect.poll(
+    () => page.evaluate(async () => Boolean((await navigator.serviceWorker.getRegistration())?.active)),
+    { timeout: 10_000 }
+  ).toBe(true);
+  await page.reload({ waitUntil: 'networkidle' });
+  await expect.poll(
+    () => page.evaluate(() => Boolean(navigator.serviceWorker.controller)),
+    { timeout: 10_000 }
+  ).toBe(true);
+}
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
@@ -118,10 +136,10 @@ test('has no accessibility violations or nested complementary landmarks on the w
   expect(results.violations).toEqual([]);
 });
 
-test('loads the saved workbench offline', async ({ page, context }) => {
+test('the production-preview worker controls the saved workbench before its offline reload', async ({ page, context }) => {
   await page.getByRole('link', { name: /Try the 3-step starter/i }).click();
-  await page.evaluate(() => navigator.serviceWorker.ready);
-  await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
+  await controlPageWithBuiltServiceWorker(page);
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Roomy voice');
   const scriptPath = await page.locator('script[type="module"]').getAttribute('src');
   const stylePath = await page.locator('link[rel="stylesheet"]').getAttribute('href');
   expect(scriptPath).toMatch(/^\/assets\/[\w-]+\.js$/);
