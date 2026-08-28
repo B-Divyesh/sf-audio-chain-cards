@@ -1,6 +1,6 @@
 # Chain Cards repair handoff
 
-Verdict: **PASS locally — ready for static deployment**
+Verdict: **PASS — deployed and live-verified**
 
 - Work order: `audio-chain-cards-repair-2`
 - Repair base: `f45dd69342206fa8f843d53f1f5a9903b69fc335`
