@@ -1,0 +1,11 @@
+{
+  "slug": "audio-chain-cards",
+  "title": "Chain Cards",
+  "territory": "games-creative",
+  "user": "Beginning audio creators who need to apply and share a known-good repair or finishing sequence without learning a whole DAW template system.",
+  "smallest_useful_product": "A local web tool that packages ordered effect recommendations/commands with audition checkpoints, timestamp labels, and a portable JSON card. It can launch compatible Audacity/ffmpeg actions but does not implement proprietary restoration.",
+  "success_measure": "At least 60% of testers can reproduce a shared three-step repair card on a new recording and identify its review checkpoints in under five minutes.",
+  "artifact_class": "pwa-offline",
+  "monetization": "free",
+  "constraints": "Do not bundle proprietary effect settings or make guaranteed repair claims; document that processing changes source audio and require explicit output paths."
+}
