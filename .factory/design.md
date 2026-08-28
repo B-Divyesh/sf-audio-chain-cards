@@ -50,7 +50,7 @@ All body text and controls meet 4.5:1; meaningful states always include a label 
 
 Subject: a compact tabletop audio repair chain with three distinct metal modules linked by one luminous cable, a small headphone checkpoint at the end, knobs and waveform-like indicators without readable lettering. World: an intimate night-market electronics stall. Materials: powder-coated navy metal, braided cable, translucent cyan and amber acrylic, worn paper tags without text. Light: practical overhead amber pool plus restrained cyan neon spill. Lens/composition: editorial still life, slightly elevated 35 mm view, clean negative space on the left, crisp module edges. Palette words: midnight ink, signal cyan, checkpoint amber, repair coral, paper cream. Negative list: no people, no hands, no brands, no logos, no readable text, no watermark, no DAW screen, no fantasy machinery, no gradients, no purple-blue cyberpunk haze, no excessive glow.
 
-Asset prompt derives verbatim from this sheet. Generated with the factory image deployment (`gpt-image-1` family via `/opt/fleet/lib/gen-image.sh`) on 2026-08-28. Generated assets are original to Chain Cards and are disclosed in the footer. Source PNG and prompt sidecar are retained under `assets/src/`; optimized WebP ships in the PWA.
+Asset prompt derives verbatim from this sheet. Generated with the Azure Foundry `factory-image` deployment via `/opt/fleet/lib/gen-image.sh` on 2026-08-28. Generated assets are original to Chain Cards and are disclosed in the footer. Source PNG and prompt sidecar are retained under `assets/src/`; optimized WebP and JPEG fallbacks ship in the PWA.
 
 ### Hand-authored assets
 
