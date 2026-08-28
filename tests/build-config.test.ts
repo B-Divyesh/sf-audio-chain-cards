@@ -16,4 +16,16 @@ describe('static deployment cache policy', () => {
     const generator = await readFile(new URL('../scripts/build-sw.mjs', import.meta.url), 'utf8');
     expect(generator).toContain("file !== '/staticwebapp.config.json'");
   });
+
+  it('builds legal pages as Vite entries so they use fingerprinted CSS', async () => {
+    const config = await readFile(new URL('../vite.config.ts', import.meta.url), 'utf8');
+    const privacy = await readFile(new URL('../privacy/index.html', import.meta.url), 'utf8');
+    const terms = await readFile(new URL('../terms/index.html', import.meta.url), 'utf8');
+    expect(config).toContain("privacy: 'privacy/index.html'");
+    expect(config).toContain("terms: 'terms/index.html'");
+    expect(privacy).toContain('/src/style.css');
+    expect(terms).toContain('/src/style.css');
+    expect(privacy).not.toContain('/assets/style.css');
+    expect(terms).not.toContain('/assets/style.css');
+  });
 });

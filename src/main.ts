@@ -23,6 +23,7 @@ const app: HTMLDivElement = mount;
 let audioUrl: string | null = null;
 let installPrompt: BeforeInstallPromptEvent | null = null;
 let toastTimer = 0;
+let hasRenderedRoute = false;
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -71,6 +72,9 @@ function shell(content: string, route: 'cards' | 'new' | 'card' = 'cards'): void
     <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
     <div class="update-toast" id="update-toast" hidden><span>A fresh version is ready.</span><button type="button" id="reload-app">Update now</button></div>
   `;
+  // The skip link uses this landmark as its fragment target. tabindex=-1
+  // permits deliberate focus without creating another normal tab stop.
+  document.querySelector<HTMLElement>('#main')?.setAttribute('tabindex', '-1');
   bindNetworkState();
 }
 
@@ -489,6 +493,11 @@ function bindEditor(card: ChainCard): void {
 }
 
 async function route(): Promise<void> {
+  // #main is a fragment target for the skip link, never an app route.
+  if (location.hash === '#main') {
+    document.querySelector<HTMLElement>('#main')?.focus({ preventScroll: true });
+    return;
+  }
   if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; }
   const parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
   try {
@@ -496,7 +505,10 @@ async function route(): Promise<void> {
     else if (parts[0] === 'edit' && parts[1]) await renderEditor(decodeURIComponent(parts[1]));
     else if (parts[0] === 'new') await renderEditor();
     else await renderHome();
-    document.querySelector<HTMLElement>('#main')?.focus({ preventScroll: true });
+    // Preserve the browser's initial tab order so the skip link is first on a
+    // fresh load. Subsequent hash-route changes move readers to new content.
+    if (hasRenderedRoute) document.querySelector<HTMLElement>('#main')?.focus({ preventScroll: true });
+    hasRenderedRoute = true;
   } catch (error) {
     shell(`<main id="main" class="not-found"><p class="eyebrow">Local storage error</p><h1>Your card box could not open.</h1><p>${escapeHtml(error instanceof Error ? error.message : 'Reload the page and try again.')}</p><button class="button primary" type="button" onclick="location.reload()">Reload Chain Cards</button></main>`);
   }

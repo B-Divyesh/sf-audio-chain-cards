@@ -6,6 +6,15 @@ export default defineConfig({
   },
   build: {
     target: 'es2022',
-    sourcemap: false
+    sourcemap: false,
+    // Build legal documents as entry pages so their CSS references are
+    // fingerprinted alongside the app instead of copied from public/.
+    rollupOptions: {
+      input: {
+        app: 'index.html',
+        privacy: 'privacy/index.html',
+        terms: 'terms/index.html'
+      }
+    }
   }
 });

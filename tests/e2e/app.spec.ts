@@ -124,8 +124,8 @@ test('loads the saved workbench offline', async ({ page, context }) => {
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
   const scriptPath = await page.locator('script[type="module"]').getAttribute('src');
   const stylePath = await page.locator('link[rel="stylesheet"]').getAttribute('href');
-  expect(scriptPath).toMatch(/^\/assets\/index-[\w-]+\.js$/);
-  expect(stylePath).toMatch(/^\/assets\/index-[\w-]+\.css$/);
+  expect(scriptPath).toMatch(/^\/assets\/[\w-]+\.js$/);
+  expect(stylePath).toMatch(/^\/assets\/[\w-]+\.css$/);
   await expect.poll(() => page.evaluate(async (path) => Boolean(await caches.match(path!)), scriptPath)).toBe(true);
   await context.setOffline(true);
   await page.reload();
@@ -142,3 +142,47 @@ test('fits a 390px-class screen without horizontal overflow', async ({ page }) =
   const hasOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
   expect(hasOverflow).toBe(false);
 });
+
+test('keeps skip-link focus in the current main landmark instead of routing #main', async ({ page }) => {
+  const skipLink = page.getByRole('link', { name: 'Skip to main content' });
+  await page.keyboard.press('Tab');
+  await expect(skipLink).toBeFocused();
+  await page.keyboard.press('Enter');
+
+  // Wait for the hashchange handler before checking focus. A regression here
+  // used to rerender Home and leave focus on body.
+  await page.waitForFunction(() => document.activeElement?.id === 'main');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(/clear route/i);
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('link', { name: 'Build a chain' })).toBeFocused();
+});
+
+for (const legalPage of [
+  { path: '/privacy/', title: 'Privacy' },
+  { path: '/terms/', title: 'Terms' }
+]) {
+  test(`loads the built ${legalPage.title} page without missing assets or console errors`, async ({ page }) => {
+    const failedResponses: string[] = [];
+    const consoleErrors: string[] = [];
+    page.on('response', (response) => {
+      if (response.status() >= 400) failedResponses.push(`${response.status()} ${response.url()}`);
+    });
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+
+    await page.goto(legalPage.path, { waitUntil: 'networkidle' });
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(legalPage.title);
+    await expect(page.locator('link[rel="stylesheet"]')).toHaveAttribute('href', /^\/assets\/.+\.css$/);
+    expect(await page.locator('body').evaluate((body) => getComputedStyle(body).backgroundColor)).toBe('rgb(9, 13, 18)');
+    await page.setViewportSize({ width: 390, height: 844 });
+    const returnLink = await page.getByRole('link', { name: 'Return to Chain Cards' }).boundingBox();
+    expect(returnLink?.width).toBeGreaterThanOrEqual(44);
+    expect(returnLink?.height).toBeGreaterThanOrEqual(44);
+    expect(failedResponses).toEqual([]);
+    expect(consoleErrors).toEqual([]);
+
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact ?? ''))).toEqual([]);
+  });
+}

@@ -43,7 +43,7 @@ Cards, labels, completion state, and short change history live in this browserâ€
 
 Chain Cards does not execute commands. Always keep the original recording, inspect a generated command, use a new output path, and audition the result. Imports are checked against the complete v1 card schema before they are stored, but still review another personâ€™s instructions before using them.
 
-See [the product brief](.factory/brief.json), [visual system and asset provenance](.factory/design.md), [privacy policy](public/privacy/index.html), and [terms](public/terms/index.html).
+See [the product brief](.factory/brief.json), [visual system and asset provenance](.factory/design.md), [privacy policy](privacy/index.html), and [terms](terms/index.html).
 
 ## Deployment
 
