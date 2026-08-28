@@ -47,13 +47,13 @@ self.addEventListener('fetch', (event) => {
           caches.open(RUNTIME).then((cache) => cache.put(event.request, copy));
           return response;
         })
-        .catch(async () => (await caches.match(event.request)) || (await caches.match('/index.html')) || caches.match('/offline.html'))
+        .catch(async () => (await caches.match(event.request.url, { ignoreSearch: true })) || (await caches.match('/index.html')) || caches.match('/offline.html'))
     );
     return;
   }
 
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
+    caches.match(event.request.url, { ignoreSearch: true }).then((cached) => cached || fetch(event.request).then((response) => {
       if (response.ok) {
         const copy = response.clone();
         caches.open(RUNTIME).then((cache) => cache.put(event.request, copy));

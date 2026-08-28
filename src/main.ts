@@ -93,7 +93,7 @@ async function ensureStarter(): Promise<void> {
 function cardPreview(card: ChainCard): string {
   const done = card.steps.filter((step) => step.complete).length;
   return `<article class="card-preview">
-    <a href="#/card/${encodeURIComponent(card.id)}" aria-label="Open ${escapeHtml(card.title)}">
+    <a href="#/card/${encodeURIComponent(card.id)}">
       <div class="card-ticket"><span>${card.steps.length} steps</span><span>${card.labels.length} labels</span></div>
       <h2>${escapeHtml(card.title || 'Untitled card')}</h2>
       <p>${escapeHtml(card.goal || 'No goal added yet.')}</p>
@@ -129,7 +129,7 @@ async function renderHome(): Promise<void> {
         <div><p class="kicker">Local card box</p><h2 id="cards-title">Your repair chains</h2></div>
         <div class="shelf-actions">
           <button class="button quiet" id="import-button" type="button">Import JSON</button>
-          <input id="import-file" class="visually-hidden" type="file" accept="application/json,.json" />
+          <input id="import-file" class="visually-hidden" type="file" accept="application/json,.json" aria-label="Import Chain Cards JSON" />
           <a class="button primary compact" href="#/new">New card</a>
         </div>
       </div>
@@ -360,6 +360,8 @@ function bindLabelActions(card: ChainCard, refresh: () => void, audio: HTMLAudio
     audio.focus();
   }));
   document.querySelectorAll<HTMLButtonElement>('[data-remove-label]').forEach((button) => button.addEventListener('click', async () => {
+    const label = card.labels.find((item) => item.id === button.dataset.removeLabel);
+    if (!label || !confirm(`Remove the review label at ${formatTime(label.seconds)}?`)) return;
     card.labels = card.labels.filter((label) => label.id !== button.dataset.removeLabel);
     card.updatedAt = new Date().toISOString();
     await cardDb.put(card);
@@ -492,6 +494,7 @@ async function route(): Promise<void> {
 
 function registerPwa(): void {
   if (!('serviceWorker' in navigator)) return;
+  const hadController = Boolean(navigator.serviceWorker.controller);
   navigator.serviceWorker.register('/sw.js').then((registration) => {
     const offerUpdate = () => {
       const update = document.querySelector<HTMLElement>('#update-toast');
@@ -509,7 +512,7 @@ function registerPwa(): void {
     });
     let refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (!refreshing) { refreshing = true; location.reload(); }
+      if (hadController && !refreshing) { refreshing = true; location.reload(); }
     });
   }).catch(() => announce('Offline installation is unavailable in this browser.', 'error'));
 }

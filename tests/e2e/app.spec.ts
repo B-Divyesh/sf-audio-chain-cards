@@ -56,17 +56,19 @@ test('creates and edits a portable card', async ({ page }) => {
 
   await page.getByRole('link', { name: 'Edit card' }).click();
   await page.getByRole('button', { name: 'Add another step' }).click();
-  const names = page.getByLabel('Step name');
-  await names.nth(1).fill('Final listen');
-  await page.getByLabel('Action').nth(1).fill('Listen once at a comfortable level.');
-  await page.getByLabel('What should the listener check?').nth(1).fill('No new clicks or harsh peaks.');
+  const secondStep = page.locator('.editor-step').nth(1);
+  await secondStep.getByLabel('Step name').fill('Final listen');
+  await secondStep.getByLabel('Action', { exact: true }).fill('Listen once at a comfortable level.');
+  await secondStep.getByLabel('What should the listener check?').fill('No new clicks or harsh peaks.');
   await page.getByRole('button', { name: 'Save card' }).click();
   await expect(page.locator('.chain-step')).toHaveCount(2);
 });
 
 test('has no serious accessibility violations on the workbench', async ({ page }) => {
+  const homeResults = await new AxeBuilder({ page }).analyze();
+  expect(homeResults.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact ?? ''))).toEqual([]);
   await page.getByRole('link', { name: /Try the 3-step starter/i }).click();
-  const results = await new AxeBuilder({ page }).disableRules(['color-contrast']).analyze();
+  const results = await new AxeBuilder({ page }).analyze();
   const serious = results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact ?? ''));
   expect(serious).toEqual([]);
 });
@@ -74,7 +76,8 @@ test('has no serious accessibility violations on the workbench', async ({ page }
 test('loads the saved workbench offline', async ({ page, context }) => {
   await page.getByRole('link', { name: /Try the 3-step starter/i }).click();
   await page.evaluate(() => navigator.serviceWorker.ready);
-  await page.waitForTimeout(300);
+  await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
+  await expect.poll(() => page.evaluate(async () => Boolean(await caches.match('/assets/app.js')))).toBe(true);
   await context.setOffline(true);
   await page.reload();
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Roomy voice');
