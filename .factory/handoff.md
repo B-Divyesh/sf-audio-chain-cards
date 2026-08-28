@@ -19,6 +19,7 @@ Verdict: **PASS — deployed and live-verified**
 - Production-preview Playwright coverage loads `/privacy/` and `/terms/` from `dist/`, captures every failed HTTP response and console error, verifies a fingerprinted CSS URL and the styled dark background, checks 390×844 return-link targets, and runs Axe serious/critical checks.
 - Keyboard coverage presses Tab then Enter on the skip link, waits for hash handling to settle, asserts focus is the current main landmark, and verifies the next Tab reaches the first main-content action.
 - The existing offline test accepts content-hashed app asset names and confirms the service worker cache supports an offline saved-workbench reload.
+- An isolated server running the exact `dist/` build changed only the service-worker cache version. `registration.update()` produced a waiting worker and displayed the in-app `A fresh version is ready` update toast.
 
 ## Verification evidence
 
