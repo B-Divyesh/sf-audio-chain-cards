@@ -1,0 +1,9 @@
+{
+  "use_case": "stylized-concept",
+  "asset_type": "landing page hero illustration",
+  "prompt": "An editorial still life of a compact tabletop audio repair chain inside an intimate night-market electronics stall. Three distinct powder-coated midnight navy metal modules are linked in order by one luminous braided cyan signal cable, ending at a small headphone audition checkpoint. Include tactile knobs, abstract waveform-like indicator marks, translucent cyan and amber acrylic, and worn blank cream paper tags. Slightly elevated 35mm view, crisp module edges, practical overhead amber pool of light with restrained cyan spill, deep painted-night backdrop, clean usable negative space on the left. Premium stylized 3D product illustration with believable material grain and subtle wear, not photoreal advertising. No people, no hands, no brands, no logos, no letters, no numbers, no readable text, no watermark, no DAW screen, no fantasy machinery, no purple haze, no excessive glow, no gradient background.",
+  "size": "1536x1024",
+  "quality": "high",
+  "generator": "/opt/fleet/lib/gen-image.sh",
+  "date": "2026-08-28"
+}

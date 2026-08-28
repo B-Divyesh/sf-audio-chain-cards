@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Chain Cards app icon</title>
+  <desc id="desc">Three cyan audio modules connected on a dark field with an amber checkpoint.</desc>
+  <rect width="512" height="512" rx="88" fill="#090d12"/>
+  <path d="M138 188h236M138 324h236" stroke="#4ee9df" stroke-width="32" stroke-linecap="round"/>
+  <rect x="88" y="126" width="130" height="124" rx="22" fill="#16222c" stroke="#4ee9df" stroke-width="12"/>
+  <rect x="294" y="262" width="130" height="124" rx="22" fill="#16222c" stroke="#4ee9df" stroke-width="12"/>
+  <circle cx="153" cy="188" r="23" fill="#ffc857"/>
+  <path d="M359 293l31 31-31 31-31-31z" fill="#ffc857"/>
+  <path d="M218 188c72 0 76 136 76 136" fill="none" stroke="#4ee9df" stroke-width="32" stroke-linecap="round"/>
+</svg>
