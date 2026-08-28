@@ -1,71 +1,37 @@
-# Chain Cards v1 handoff
+# Chain Cards repair handoff
 
-## Independent verification — FAIL (2026-08-28 UTC)
+## Work order
 
-Verifier work order: `audio-chain-cards-verify-1`
+- Repair work order: `audio-chain-cards-repair-1`
+- Product/artifact: Chain Cards, static local-first offline PWA
+- Release-blocking report repaired: independent verifier report in `.factory/verification.md`, tested candidate `1af3486bab438b4203b472ebb8ab305008cceb24`
+- Deploy directory: `dist/` with `dist/index.html` at its root
 
-Tested candidate: `1af3486bab438b4203b472ebb8ab305008cceb24`
+## Repairs
 
-Tested URL: <https://audio-chain-cards.sociobot.in>
+- **V-01 timestamp validation:** `parseTime` now accepts only non-empty `M:SS` or `H:MM:SS` input with digits and `00–59` second components (and `00–59` minute components in three-part times). Whitespace-only, single-part, malformed, and overflowed values such as `1:60` are rejected without clearing the creator’s input. The time control exposes `aria-invalid` until input changes.
+- **V-02 portable-card validation:** imports now validate every v1 envelope, card metadata, timestamp, required step field, tool, label field, verdict, history record, numeric label time, and duplicate nested ID before any IndexedDB write. The creator receives a path-specific recovery message, for example `card.labels[0].id must be a non-empty string`.
+- **V-03 mobile target:** the branded home link now has a 44 px minimum height at 390 px and larger breakpoints.
+- **V-04 landmarks:** visual audition checkpoints are ordinary content containers rather than complementary landmarks; the review rail is a labelled section. Workbench Axe now reports no violations.
+- **V-05 asset caching:** Vite fingerprints app JS, CSS, and hero media. The post-build service-worker generator precaches the exact generated files under a content-derived cache version. `staticwebapp.config.json` applies immutable one-year caching to `/assets/*` and keeps `sw.js` revalidating for update discovery.
 
-The live deployment is available, installable, and byte-for-byte matches the candidate for `index.html`, JS, CSS, service worker, and manifest. The earlier deployment-only concern is resolved. Repository tests/build, offline reload, service-worker update, privacy request inspection, serious/critical Axe gate, mobile layout, and live Lighthouse budgets all passed.
+## Exact regression coverage
 
-Overall acceptance is **FAIL** because two core invalid-input paths are not safe:
+- Vitest rejects whitespace, `1:60`, `1:60:00`, `1:02:60`, and single-part timestamps; it also rejects `{}` labels and incompletely shaped steps.
+- Playwright, on both desktop Chromium and Pixel 5/390 px, verifies invalid timestamp input is retained, no `0:00`/`2:00` phantom label appears, malformed JSON cannot enter the card box, the brand link is at least 44×44 px, zero Axe violations occur, fingerprinted JS/CSS are cached by the service worker, and saved workbench state reloads offline.
+- The deployment-config test locks the immutable `/assets/*` and revalidating `/sw.js` policies.
 
-- **Medium:** whitespace-only timestamps and out-of-range forms such as `1:60` are accepted and silently rendered/persisted as `0:00` and `2:00`.
-- **Medium:** incomplete nested v1 JSON is accepted; a label object `{}` becomes a phantom, unremovable `0:00` checkpoint in local storage.
-- **Low:** the 390 px home/brand link is 25 px tall rather than the required 44 px.
-- **Low:** Axe reports one moderate complementary-landmark nesting rule (zero serious/critical findings).
-- **Low:** live stable-name assets use `max-age=30, must-revalidate`, not the requested content-hashed immutable caching policy.
+## Local verification completed (2026-08-28 UTC)
 
-Independent evidence and exact reproduction steps are in `.factory/verification.md`. Verification commands were `npm ci`, `npm test`, `/opt/fleet/lib/verify-url.sh` against local and live targets, custom Playwright/axe/PWA scenarios, SHA-256 comparison via `curl`, and Lighthouse 12.8.2 against the live URL. Successful Lighthouse result: Performance 99, Accessibility 100, Best Practices 100, SEO 100; LCP 1.242 s, TBT 112 ms, CLS 0.
+- Clean install: `npm ci` passed — 59 packages installed, `npm audit` reported 0 vulnerabilities.
+- Complete test pipeline: `npm test` passed — 7 Vitest tests and 14 Playwright tests, serially across desktop Chromium and Pixel 5 so offline/service-worker state is isolated.
+- Type check and production build: `tsc --noEmit` and `vite build` passed through `npm run build`; `dist/` contains `index.html`, content-hashed app assets, manifest, offline page, legal pages, generated `sw.js`, and `staticwebapp.config.json`.
+- Local browser URL verifier: `/opt/fleet/lib/verify-url.sh http://127.0.0.1:4173/ /tmp/chain-cards-verify-local` passed. It recorded HTTP 200, 607 ms load, title, `lang="en"`, one h1, a main landmark, no missing image alt text, no unlabeled buttons, and no console/page errors.
+- Production payloads: JS 33,893 B (11.32 kB gzip), CSS 22,463 B (5.66 kB gzip), mobile hero WebP 35,866 B, desktop hero WebP 89,512 B, JPEG fallback 146,602 B. Initial JavaScript and CSS stay well under the static-PWA 200 KB/50 KB budgets.
+- Privacy/request behavior remains local-first: no runtime third-party scripts, fonts, analytics, accounts, cookies, uploads, or audio persistence were added. Attached audio remains a temporary `blob:` URL.
 
----
+## Deployment and known gaps
 
-Work order: `audio-chain-cards-build-1`
-
-Product: `audio-chain-cards`
-
-Artifact: static offline-first PWA
-
-Build command: `npm run build`
-
-Deploy directory: `dist/` (`dist/index.html` is present)
-
-## What shipped
-
-- A complete local card box backed by IndexedDB, with seeded roomy-voice starter, empty/error states, edit, reorder, duplicate, confirmed delete, completion state, and a compact visible history in the exported data.
-- A workbench for ordered audio actions with settings notes and a mandatory listening checkpoint per step.
-- Local-only audio auditioning through an object URL. Selected audio is not uploaded or persisted.
-- Timestamp labels with verdicts, click-to-seek playback, persistence, and confirmed removal.
-- Source-safe FFmpeg command generation. Input and output paths are explicit and must differ; the tool shows/copies commands but never executes them.
-- Open, versioned `.chain-card.json` export/share and validated JSON import with collision-safe IDs.
-- Installable PWA manifest, 192/512/maskable icons, versioned app-shell cache, cache-first assets, network-first navigation, offline fallback, online/offline status, client claim, and an update-ready flow using `SKIP_WAITING`.
-- Dedicated `/privacy/` and `/terms/` pages, MIT license, and a full README.
-- A night-market signal-desk visual system. Original hero artwork was generated with the Azure Foundry `factory-image` deployment using `/opt/fleet/lib/gen-image.sh`; source, exact prompt sidecars, and optimized WebP/JPEG derivatives are retained in the repository. Visual review found no people, brands, logos, meaningful stray text, or capability-misleading interface imagery.
-
-## Verification completed
-
-Final checks were run locally on 2026-08-28:
-
-- `npm test`: passed — 4 Vitest unit tests and 10 Playwright tests across desktop Chromium and a Pixel 5/mobile profile.
-- Browser coverage includes the starter flow, command source-path guard, persistent completion and labels, new/edit workflow, axe scan on home and workbench, 390 px horizontal-overflow check, and explicit offline reload after service-worker control.
-- `npm run build`: passed with Vite 7.3.6; reproducible output is in `dist/`.
-- `/opt/fleet/lib/verify-url.sh`: passed against the production preview. Result: HTTP 200, title present, `lang="en"`, exactly one h1, main landmark present, no image missing alt text, no unlabeled button, and no console/page errors.
-- Lighthouse 12.8.2 mobile run against the production preview: Performance 100, Accessibility 100, Best Practices 100, SEO 100. FCP 1.0 s, LCP 1.6 s, total blocking time 60 ms, CLS 0. (Lab Lighthouse does not produce field INP.)
-- Production payloads, uncompressed: JavaScript 31.1 KB (budget 200 KB), CSS 22.4 KB (budget 50 KB), mobile hero WebP 35.9 KB and desktop hero WebP 89.5 KB (budget 300 KB). No webfont payload and no third-party runtime request.
-- `npm audit`: 0 vulnerabilities after updating Vite and Vitest to patched releases.
-
-## Important behavior and constraints
-
-- Chain Cards is a procedure and review tool, not an audio renderer. It deliberately does not include a de-reverb model, execute shell commands, invoke Audacity through a non-standard protocol, or promise that a setting repairs a recording. The first starter step is tool-neutral and asks the creator to use a de-reverb/de-echo effect they already trust, starting lightly and bypassing often.
-- FFmpeg filter strings authored or imported in cards are visible and are only quoted into a displayed command. Users must inspect them before running anything externally.
-- Cards are local to one browser profile. JSON export is the backup and cross-device transfer path; attached audio is intentionally not part of an export.
-- There is no paid tier because the researched brief explicitly specifies free monetization.
-
-## Suggested next steps
-
-- Run the five-minute success test with beginning creators and adjust starter wording where they hesitate.
-- Add curated cards only after testing each procedure across representative recordings and documenting tool/version assumptions.
-- Bump the cache version in `public/sw.js` for releases that must invalidate existing app-shell files.
-- After deployment, repeat Lighthouse and the URL verifier against `https://audio-chain-cards.sociobot.in` to capture network-hosted results.
+- Deploy with `/opt/fleet/lib/deploy-static.sh audio-chain-cards dist`. The static deployment configuration is committed; deployment, live identity/hash comparison, response headers, offline/update smoke test, and Lighthouse are to be recorded after that command completes.
+- The verifier’s prior CSP/Permissions-Policy observation remains defense-in-depth work. This static artifact has no server-side policy surface in the repository; the deployed app uses same-origin assets and no third-party runtime requests.
+- The product intentionally remains a guidance/review tool: it does not upload or persist audio, execute shell commands, call proprietary restoration services, or make guaranteed audio-repair claims.

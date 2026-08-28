@@ -37,7 +37,7 @@ button { color: inherit; }
 [hidden] { display: none !important; }
 
 .site-header { min-height: 76px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 24px; padding: 12px clamp(20px, 4vw, 64px); border-bottom: 1px solid var(--border); background: #0c1218; position: relative; z-index: 10; }
-.brand { display: inline-flex; align-items: center; gap: 11px; width: max-content; color: var(--paper); font-family: var(--display); font-size: 20px; font-weight: 800; letter-spacing: .03em; text-decoration: none; text-transform: uppercase; }
+.brand { min-height: 44px; display: inline-flex; align-items: center; gap: 11px; width: max-content; padding-block: 4px; color: var(--paper); font-family: var(--display); font-size: 20px; font-weight: 800; letter-spacing: .03em; text-decoration: none; text-transform: uppercase; }
 .brand svg { width: 42px; fill: var(--ink-850); stroke: var(--cyan); stroke-width: 3; overflow: visible; filter: drop-shadow(0 0 5px #4ee9df55); }
 .site-header nav { display: flex; align-items: center; gap: 8px; }
 .site-header nav a { min-height: 44px; display: inline-flex; align-items: center; padding: 8px 14px; color: var(--muted); font-weight: 700; text-decoration: none; border-bottom: 2px solid transparent; }

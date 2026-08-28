@@ -5,13 +5,16 @@ import {
   duplicateCard,
   fileSlug,
   formatTime,
-  isPortableCard,
   makeFfmpegCommand,
   parseTime,
   starterCard,
-  uid
+  uid,
+  validatePortableCard
 } from './model';
 import type { ChainCard, ChainStep, PortableCard, ToolKind, Verdict } from './types';
+import heroNightMarket768 from './assets/hero-night-market-768.webp';
+import heroNightMarket1280 from './assets/hero-night-market-1280.webp';
+import heroNightMarketJpg from './assets/hero-night-market.jpg';
 
 const mount = document.querySelector<HTMLDivElement>('#app');
 if (!mount) throw new Error('App mount was not found.');
@@ -120,8 +123,8 @@ async function renderHome(): Promise<void> {
         <p class="trust-line"><span aria-hidden="true">●</span> Your cards stay in this browser. Audio never leaves your device.</p>
       </div>
       <picture class="hero-art">
-        <source type="image/webp" srcset="/assets/hero-night-market-768.webp 768w, /assets/hero-night-market-1280.webp 1280w" sizes="(max-width: 800px) 100vw, 52vw" />
-        <img src="/assets/hero-night-market.jpg" width="1280" height="853" alt="Three dark audio modules connected by a cyan cable at a night-market repair bench, ending beside headphones." fetchpriority="high" decoding="async" />
+        <source type="image/webp" srcset="${heroNightMarket768} 768w, ${heroNightMarket1280} 1280w" sizes="(max-width: 800px) 100vw, 52vw" />
+        <img src="${heroNightMarketJpg}" width="1280" height="853" alt="Three dark audio modules connected by a cyan cable at a night-market repair bench, ending beside headphones." fetchpriority="high" decoding="async" />
       </picture>
     </section>
     <section class="card-shelf" aria-labelledby="cards-title">
@@ -159,8 +162,9 @@ async function importCard(event: Event): Promise<void> {
   try {
     if (file.size > 1_000_000) throw new Error('That file is over 1 MB. Choose a Chain Cards JSON file.');
     const parsed: unknown = JSON.parse(await file.text());
-    if (!isPortableCard(parsed)) throw new Error('This is not a supported Chain Cards v1 export.');
-    const imported = structuredClone(parsed.card);
+    const validation = validatePortableCard(parsed);
+    if (!validation.valid) throw new Error(validation.error);
+    const imported = structuredClone(validation.card.card);
     if (await cardDb.get(imported.id)) imported.id = uid();
     imported.updatedAt = new Date().toISOString();
     imported.history = [...(imported.history ?? []), { at: imported.updatedAt, note: 'Imported from JSON' }];
@@ -180,7 +184,7 @@ function stepMarkup(step: ChainStep, index: number): string {
     <div class="step-module">
       <div class="step-head"><div><span class="tool-badge">${escapeHtml(step.tool)}</span><h2>${escapeHtml(step.title)}</h2></div><button class="complete-step" type="button" aria-pressed="${step.complete}" data-complete="${escapeHtml(step.id)}">${step.complete ? 'Completed' : 'Mark complete'}</button></div>
       <div class="step-copy"><div><h3>Do this</h3><p>${escapeHtml(step.action)}</p></div><div><h3>Settings / note</h3><p>${escapeHtml(step.settings || 'No fixed setting recorded.')}</p></div></div>
-      <aside class="checkpoint"><span aria-hidden="true">◆</span><div><strong>Audition checkpoint</strong><p>${escapeHtml(step.listenFor)}</p></div></aside>
+      <div class="checkpoint"><span aria-hidden="true">◆</span><div><strong>Audition checkpoint</strong><p>${escapeHtml(step.listenFor)}</p></div></div>
       <div class="step-actions"><button type="button" class="text-button" data-copy-instructions="${escapeHtml(step.id)}">Copy instructions</button>${step.ffmpegFilter ? `<button type="button" class="text-button command-button" data-command="${escapeHtml(step.id)}">Make FFmpeg command</button>` : ''}</div>
       ${step.ffmpegFilter ? `<div class="command-output" id="command-${escapeHtml(step.id)}" hidden><code></code><button type="button" data-copy-command="${escapeHtml(step.id)}">Copy command</button></div>` : ''}
     </div>
@@ -212,7 +216,7 @@ async function renderCard(id: string): Promise<void> {
         <div class="progress-head"><div><p class="kicker">Signal chain</p><h2 class="visually-hidden">Effect steps</h2></div><p id="progress-label"><strong>${completed}</strong> of ${card.steps.length} complete</p></div>
         ${card.steps.length ? `<ol class="chain-list">${card.steps.map(stepMarkup).join('')}</ol>` : `<div class="empty-state small"><h2>No steps in this card</h2><p>Add the first action before you start processing.</p><a class="button primary" href="#/edit/${encodeURIComponent(card.id)}">Add steps</a></div>`}
       </div>
-      <aside class="review-rail" aria-label="Audition and review tools">
+      <section class="review-rail" aria-label="Audition and review tools">
         <section class="rail-panel audition-panel"><p class="kicker">Local audition</p><h2>Listen beside the recipe</h2><p>Your file plays only in this tab and is never saved or uploaded.</p>
           <label class="file-drop" for="audio-file"><span aria-hidden="true">♪</span><strong id="audio-file-label">Choose an audio file</strong><small>WAV, MP3, M4A, OGG, or a format your browser supports</small></label>
           <input class="visually-hidden" id="audio-file" type="file" accept="audio/*" />
@@ -227,7 +231,7 @@ async function renderCard(id: string): Promise<void> {
           <form id="label-form"><div class="time-row"><label for="label-time">Time</label><button class="text-button" type="button" id="use-playhead">Use playhead</button></div><input id="label-time" inputmode="numeric" placeholder="1:24" aria-describedby="time-help" required /><small id="time-help">Use M:SS or H:MM:SS</small><label for="label-note">What should be checked?</label><input id="label-note" maxlength="100" placeholder="Tail after “room”" required /><label for="label-verdict">Verdict</label><select id="label-verdict"><option>Review</option><option>Better</option><option>Same</option><option>Worse</option></select><button class="button amber full" type="submit">Add review label</button></form>
           <div id="labels-list">${labelsMarkup(card)}</div>
         </section>
-      </aside>
+      </section>
     </section>
     <dialog id="delete-dialog" aria-labelledby="delete-title"><form method="dialog"><p class="kicker">Remove local card</p><h2 id="delete-title">Delete “${escapeHtml(card.title)}”?</h2><p>This removes the card, its labels, and its completion state from this browser. Export first if you may need it.</p><div><button class="button quiet" value="cancel">Keep card</button><button class="button danger" value="delete">Delete card</button></div></form></dialog>
   </main>`, 'card');
@@ -321,7 +325,10 @@ function bindCard(card: ChainCard): void {
     const noteInput = document.querySelector<HTMLInputElement>('#label-note');
     const verdictInput = document.querySelector<HTMLSelectElement>('#label-verdict');
     const seconds = parseTime(timeInput?.value ?? '');
-    if (seconds === null || seconds < 0) return announce('Enter the time as M:SS or H:MM:SS.', 'error');
+    if (seconds === null || seconds < 0) {
+      timeInput?.setAttribute('aria-invalid', 'true');
+      return announce('Enter a valid time as M:SS or H:MM:SS. Seconds and H:MM:SS minutes must be 00–59.', 'error');
+    }
     const note = noteInput?.value.trim() ?? '';
     if (!note) return announce('Add a short note about what to check.', 'error');
     const now = new Date().toISOString();
@@ -333,6 +340,9 @@ function bindCard(card: ChainCard): void {
     if (noteInput) noteInput.value = '';
     refreshLabels();
     announce(`Label added at ${formatTime(seconds)}.`);
+  });
+  document.querySelector<HTMLInputElement>('#label-time')?.addEventListener('input', (event) => {
+    (event.currentTarget as HTMLInputElement).removeAttribute('aria-invalid');
   });
   bindLabelActions(card, refreshLabels, audio);
 

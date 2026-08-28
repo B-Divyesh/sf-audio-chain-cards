@@ -41,13 +41,13 @@ Playwright 1.58.2 is pinned. In an environment without the bundled Chromium bina
 
 Cards, labels, completion state, and short change history live in this browser’s IndexedDB. Selected audio is represented by a temporary object URL and is never persisted. JSON export is the backup and transfer mechanism.
 
-Chain Cards does not execute commands. Always keep the original recording, inspect a generated command, use a new output path, and audition the result. Imported cards may contain errors.
+Chain Cards does not execute commands. Always keep the original recording, inspect a generated command, use a new output path, and audition the result. Imports are checked against the complete v1 card schema before they are stored, but still review another person’s instructions before using them.
 
 See [the product brief](.factory/brief.json), [visual system and asset provenance](.factory/design.md), [privacy policy](public/privacy/index.html), and [terms](public/terms/index.html).
 
 ## Deployment
 
-Deploy the contents of `dist/` as a static site with SPA fallback to `index.html`. Serve `sw.js` without a long immutable cache so browsers can discover updates; hashed or versioned media may use long-lived caching. The factory handles DNS and infrastructure.
+Deploy the contents of `dist/` as a static site with SPA fallback to `index.html`. The build fingerprints app code, styles, and hero media, and generates a matching service-worker precache. `staticwebapp.config.json` gives `/assets/*` immutable caching while keeping `sw.js` revalidating so browsers can discover updates. The factory handles DNS and infrastructure.
 
 ## License
 

@@ -43,6 +43,52 @@ test('uses the starter card end to end', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Jump to 1:24' })).toBeVisible();
 });
 
+test('rejects invalid timestamp labels without rewriting the creator input', async ({ page }) => {
+  await page.getByRole('link', { name: /Try the 3-step starter/i }).click();
+  const time = page.getByLabel('Time');
+  const note = page.getByLabel('What should be checked?');
+  await time.fill('  ');
+  await note.fill('Listen for a clipped ending');
+  await page.getByRole('button', { name: 'Add review label' }).click();
+  await expect(page.getByRole('status')).toContainText(/valid time/i);
+  await expect(time).toHaveValue('  ');
+  await expect(page.getByRole('button', { name: /Jump to 0:00/ })).toHaveCount(0);
+
+  await time.fill('1:60');
+  await page.getByRole('button', { name: 'Add review label' }).click();
+  await expect(page.getByRole('status')).toContainText(/00–59/);
+  await expect(time).toHaveValue('1:60');
+  await expect(page.getByRole('button', { name: /Jump to 2:00/ })).toHaveCount(0);
+});
+
+test('refuses malformed portable nested data before writing it locally', async ({ page }) => {
+  const now = new Date().toISOString();
+  const malformed = {
+    format: 'chain-cards',
+    version: 1,
+    exportedAt: now,
+    card: {
+      schemaVersion: 1,
+      id: 'malformed-nested-card',
+      title: 'Malformed nested card',
+      goal: 'This must never be imported.',
+      safetyNote: 'Work on a copy.',
+      createdAt: now,
+      updatedAt: now,
+      steps: [{ id: 'step-1', title: 'A complete step', tool: 'Other', action: 'Do this.', settings: '', listenFor: 'Listen.', complete: false }],
+      labels: [{}],
+      history: [{ at: now, note: 'Created' }]
+    }
+  };
+  await page.locator('#import-file').setInputFiles({
+    name: 'malformed.chain-card.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(malformed))
+  });
+  await expect(page.getByRole('status')).toContainText('card.labels[0].id must be a non-empty string');
+  await expect(page.getByText('Malformed nested card', { exact: true })).toHaveCount(0);
+});
+
 test('creates and edits a portable card', async ({ page }) => {
   await page.getByRole('link', { name: 'Build a chain' }).click();
   await page.getByLabel('Card title').fill('Warm interview cleanup');
@@ -64,20 +110,23 @@ test('creates and edits a portable card', async ({ page }) => {
   await expect(page.locator('.chain-step')).toHaveCount(2);
 });
 
-test('has no serious accessibility violations on the workbench', async ({ page }) => {
+test('has no accessibility violations or nested complementary landmarks on the workbench', async ({ page }) => {
   const homeResults = await new AxeBuilder({ page }).analyze();
   expect(homeResults.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact ?? ''))).toEqual([]);
   await page.getByRole('link', { name: /Try the 3-step starter/i }).click();
   const results = await new AxeBuilder({ page }).analyze();
-  const serious = results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact ?? ''));
-  expect(serious).toEqual([]);
+  expect(results.violations).toEqual([]);
 });
 
 test('loads the saved workbench offline', async ({ page, context }) => {
   await page.getByRole('link', { name: /Try the 3-step starter/i }).click();
   await page.evaluate(() => navigator.serviceWorker.ready);
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
-  await expect.poll(() => page.evaluate(async () => Boolean(await caches.match('/assets/app.js')))).toBe(true);
+  const scriptPath = await page.locator('script[type="module"]').getAttribute('src');
+  const stylePath = await page.locator('link[rel="stylesheet"]').getAttribute('href');
+  expect(scriptPath).toMatch(/^\/assets\/index-[\w-]+\.js$/);
+  expect(stylePath).toMatch(/^\/assets\/index-[\w-]+\.css$/);
+  await expect.poll(() => page.evaluate(async (path) => Boolean(await caches.match(path!)), scriptPath)).toBe(true);
   await context.setOffline(true);
   await page.reload();
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Roomy voice');
@@ -86,6 +135,9 @@ test('loads the saved workbench offline', async ({ page, context }) => {
 
 test('fits a 390px-class screen without horizontal overflow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
+  const brandBox = await page.getByRole('link', { name: 'Chain Cards home' }).boundingBox();
+  expect(brandBox?.width).toBeGreaterThanOrEqual(44);
+  expect(brandBox?.height).toBeGreaterThanOrEqual(44);
   await page.getByRole('link', { name: /Try the 3-step starter/i }).click();
   const hasOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
   expect(hasOverflow).toBe(false);

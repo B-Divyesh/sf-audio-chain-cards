@@ -1,22 +1,7 @@
-const VERSION = 'chain-cards-v1.0.0';
+const VERSION = 'chain-cards-__CACHE_VERSION__';
 const SHELL = `${VERSION}-shell`;
 const RUNTIME = `${VERSION}-runtime`;
-const APP_SHELL = [
-  '/',
-  '/index.html',
-  '/assets/app.js',
-  '/assets/style.css',
-  '/manifest.webmanifest',
-  '/offline.html',
-  '/privacy/',
-  '/terms/',
-  '/icon.svg',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/assets/hero-night-market-768.webp',
-  '/assets/hero-night-market-1280.webp',
-  '/assets/hero-night-market.jpg'
-];
+const APP_SHELL = /*__APP_SHELL__*/ [];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(SHELL).then((cache) => cache.addAll(APP_SHELL)));
