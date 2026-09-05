@@ -12,6 +12,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         app: 'index.html',
+        notFound: '404.html',
         privacy: 'privacy/index.html',
         terms: 'terms/index.html'
       }

@@ -33,6 +33,7 @@ All body text and controls meet 4.5:1; meaningful states always include a label 
 
 - The header is a compact painted sign: logo, local/offline status, and navigation.
 - The landing stage pairs one generated neon signal illustration with a direct action. The illustration depicts three connected modules and a listening checkpoint, so it previews the workflow rather than filling space.
+- The artwork badge says “3 ordered steps.” It explains the sequence instead of using decorative signal lore.
 - A chain is a vertical cable. Numbered step modules sit directly on it; completed steps illuminate the segment below. Amber diamond markers identify checkpoints.
 - Primary actions are cyan filled controls; secondary actions are bordered; destructive actions are coral text with explicit confirmation.
 - Every action responds immediately through pressed depth, a live region message, or visible state change. Empty states show the exact next action.
@@ -52,6 +53,8 @@ Subject: a compact tabletop audio repair chain with three distinct metal modules
 
 Asset prompt derives verbatim from this sheet. Generated with the Azure Foundry `factory-image` deployment via `/opt/fleet/lib/gen-image.sh` on 2026-08-28. Generated assets are original to Chain Cards and are disclosed in the footer. Source PNG and prompt sidecar are retained under `assets/src/`; optimized WebP and JPEG fallbacks ship in the PWA.
 
+The 1200×630 social card is a local crop of the same generated source image. No new model output or third-party artwork was added for this repair.
+
 ### Hand-authored assets
 
-The chain-link logo, status glyphs, manifest icons, and checkpoint diamonds are original SVG/CSS geometry authored for this product. They contain no third-party marks.
+The chain-link logo, status glyphs, manifest icons, Apple touch icon, and checkpoint diamonds are original SVG/CSS geometry authored for this product. They contain no third-party marks.

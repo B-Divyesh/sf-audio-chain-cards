@@ -1,9 +1,9 @@
 {
-  "name": "Chain Cards — Audio repair recipes",
+  "name": "Chain Cards — Audio repair sequences",
   "short_name": "Chain Cards",
-  "description": "Build, audition, and share repeatable audio repair chains locally.",
+  "description": "Record, review, and share ordered audio repair steps locally.",
   "id": "/",
-  "start_url": "/?v=1",
+  "start_url": "/?v=1.1.0",
   "scope": "/",
   "display": "standalone",
   "background_color": "#090d12",

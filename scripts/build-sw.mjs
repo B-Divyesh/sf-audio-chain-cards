@@ -19,7 +19,7 @@ const generatedFiles = (await filesIn(outputPath))
   // Azure Static Web Apps consumes this configuration file but intentionally does not serve it.
   .filter((file) => file !== '/sw.js' && file !== '/staticwebapp.config.json' && !file.endsWith('.map'))
   .sort();
-const appShell = [...new Set(['/', '/privacy/', '/terms/', ...generatedFiles])];
+const appShell = [...new Set(['/', '/cards', '/demo', '/privacy/', '/terms/', ...generatedFiles])];
 const hash = createHash('sha256');
 for (const file of generatedFiles) hash.update(await readFile(join(outputPath, file)));
 const version = hash.digest('hex').slice(0, 12);

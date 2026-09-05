@@ -1,0 +1,79 @@
+[
+  {
+    "id": "demo-isolation",
+    "claim": "Demo changes never enter your saved cards.",
+    "where": "demo banner, Privacy",
+    "test": "npm run test:claim -- --grep @claim:demo-isolation",
+    "sandbox": "open /demo first; change and reset the sample; compare real IndexedDB before and after leaving demo"
+  },
+  {
+    "id": "card-workflow",
+    "claim": "Create, reorder, complete, duplicate, and delete audio repair cards.",
+    "where": "app, README",
+    "test": "npm run test:claim -- --grep @claim:card-workflow",
+    "sandbox": "fresh /demo session; perform every card action and assert the resulting order, state, copy, and deletion"
+  },
+  {
+    "id": "local-audio",
+    "claim": "Selected audio plays in the tab and is not uploaded or stored in a card.",
+    "where": "landing, workbench, Privacy, README",
+    "test": "npm run test:claim -- --grep @claim:local-audio",
+    "sandbox": "fresh /demo session; attach a generated WAV, inspect the blob URL, requests, demo storage, and reload state"
+  },
+  {
+    "id": "timestamp-jump",
+    "claim": "Timestamp labels open the selected audio at the saved moment.",
+    "where": "landing, workbench, README",
+    "test": "npm run test:claim -- --grep @claim:timestamp-jump",
+    "sandbox": "fresh /demo session with a generated WAV; add a 0:01 label and assert player time and focus"
+  },
+  {
+    "id": "safe-command",
+    "claim": "FFmpeg command text requires different input and output paths and is never run by the app.",
+    "where": "workbench, Terms, README",
+    "test": "npm run test:claim -- --grep @claim:safe-command",
+    "sandbox": "fresh /demo session; reject an equal path, quote a hostile-looking path, show text, and observe no external request"
+  },
+  {
+    "id": "json-roundtrip",
+    "claim": "Export and import a validated version 1 Chain Cards JSON file.",
+    "where": "landing, app, README",
+    "test": "npm run test:claim -- --grep @claim:json-roundtrip",
+    "sandbox": "fresh /demo session; inspect a real download, reimport it, then reject malformed nested data without adding a card"
+  },
+  {
+    "id": "persistence",
+    "claim": "Saved real cards remain after refresh and tab close.",
+    "where": "README, Privacy",
+    "test": "npm run test:claim -- --grep @claim:persistence",
+    "sandbox": "start at /demo, enter real mode, change the starter, reload, close the tab, and open the same card in a new tab"
+  },
+  {
+    "id": "offline-reload",
+    "claim": "The demo and saved cards work offline after the first visit.",
+    "where": "landing, offline banner, README",
+    "test": "npm run test:claim -- --grep @claim:offline-reload",
+    "sandbox": "dedicated fresh browser context; reload /demo offline, then save a real card and reload that card offline; close only that context"
+  },
+  {
+    "id": "private-runtime",
+    "claim": "The app has no accounts, analytics, ads, trackers, cookies, or third-party runtime scripts.",
+    "where": "Privacy, README",
+    "test": "npm run test:claim -- --grep @claim:private-runtime",
+    "sandbox": "dedicated fresh context; record the full /demo flow request log, cookies, account controls, and loaded scripts"
+  },
+  {
+    "id": "free-mit",
+    "claim": "Chain Cards is free to use and released under the MIT License.",
+    "where": "landing, Terms, README",
+    "test": "npm run test:claim -- --grep @claim:free-mit",
+    "sandbox": "start at /demo; open Terms, fetch the shipped license, and confirm there is no checkout or billing action"
+  },
+  {
+    "id": "recipe-only",
+    "claim": "Chain Cards records instructions but does not process audio or guarantee improvement.",
+    "where": "landing, Terms, README",
+    "test": "npm run test:claim -- --grep @claim:recipe-only",
+    "sandbox": "fresh /demo session; attach audio, create command text, assert the source remains attached and no processed download appears, then inspect Terms"
+  }
+]

@@ -48,6 +48,22 @@ export const starterCard = (): ChainCard => {
   };
 };
 
+export const demoCard = (): ChainCard => {
+  const card = starterCard();
+  card.id = 'demo-roomy-voice';
+  card.steps[0].complete = true;
+  card.labels = [
+    { id: uid(), seconds: 12, note: 'Room tone before the first sentence', verdict: 'Review', createdAt: card.createdAt },
+    { id: uid(), seconds: 47, note: 'Ending of “welcome back”', verdict: 'Better', createdAt: card.createdAt },
+    { id: uid(), seconds: 78, note: 'Breath before the final line', verdict: 'Review', createdAt: card.createdAt }
+  ];
+  card.history = [
+    { at: card.createdAt, note: 'Demo card loaded' },
+    { at: card.createdAt, note: 'First step marked complete' }
+  ];
+  return card;
+};
+
 export const blankCard = (): ChainCard => {
   const now = new Date().toISOString();
   return {

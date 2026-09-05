@@ -46,6 +46,12 @@ button { color: inherit; }
 .network-state { justify-self: end; display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 14px; font-weight: 700; }
 .network-state span { width: 9px; height: 9px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px #77e09b99; }
 .offline-banner { padding: 9px 20px; text-align: center; color: var(--ink-950); background: var(--amber); font-weight: 800; }
+.demo-banner { position: sticky; top: 0; z-index: 9; display: flex; align-items: center; justify-content: center; gap: 16px; min-height: 54px; padding: 5px clamp(16px, 4vw, 64px); color: var(--paper); background: #173138; border-bottom: 1px solid var(--cyan); }
+.demo-banner strong { color: var(--cyan); }
+.demo-banner span { color: var(--muted); }
+.demo-banner > div { display: flex; gap: 8px; }
+.demo-banner button, .demo-banner a { min-height: 44px; display: inline-flex; align-items: center; padding: 7px 12px; color: var(--paper); background: transparent; border: 1px solid var(--border); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.demo-banner a { color: var(--ink-950); background: var(--cyan); border-color: var(--cyan); text-decoration: none; }
 
 h1, h2, h3, p { margin-top: 0; }
 h1, h2, h3 { line-height: 1.06; }
@@ -73,10 +79,11 @@ h3 { margin-bottom: 8px; font-size: 18px; }
 .hero-copy h1 { max-width: 760px; text-shadow: 3px 3px 0 #152f33; }
 .lede { max-width: 650px; margin-bottom: 30px; color: var(--muted); font-size: clamp(18px, 2vw, 21px); line-height: 1.6; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
-.trust-line { display: flex; gap: 10px; align-items: flex-start; margin: 26px 0 0; color: var(--muted); font-size: 14px; }
-.trust-line span { color: var(--green); }
+.action-note { max-width: 620px; margin: 14px 0 0; color: var(--muted); }
+.plain-facts { display: grid; gap: 5px; padding: 0; margin: 24px 0 0; color: var(--muted); list-style: none; }
+.plain-facts li::before { content: "✓"; margin-right: 10px; color: var(--green); font-weight: 900; }
 .hero-art { align-self: center; min-width: 0; position: relative; transform: rotate(1.2deg); filter: drop-shadow(12px 18px 0 #05080c); }
-.hero-art::before { content: "SIGNAL / 03"; position: absolute; top: -18px; right: 24px; z-index: 2; padding: 8px 14px; color: var(--ink-950); background: var(--amber); font-family: var(--display); font-weight: 900; letter-spacing: .08em; transform: rotate(2deg); }
+.hero-art::before { content: "3 ORDERED STEPS"; position: absolute; top: -18px; right: 24px; z-index: 2; padding: 8px 14px; color: var(--ink-950); background: var(--amber); font-family: var(--display); font-weight: 900; letter-spacing: .08em; transform: rotate(2deg); }
 .hero-art img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border: 1px solid #5a7078; border-radius: 3px; clip-path: polygon(0 0, 96% 0, 100% 7%, 100% 100%, 4% 100%, 0 93%); }
 
 .card-shelf { padding: clamp(64px, 8vw, 108px) clamp(20px, 5vw, 80px); background: var(--ink-900); border-block: 1px solid var(--border); }
@@ -89,7 +96,7 @@ h3 { margin-bottom: 8px; font-size: 18px; }
 .card-preview > a { min-height: 300px; display: flex; flex-direction: column; padding: 24px; text-decoration: none; }
 .card-ticket { display: flex; gap: 8px; margin-bottom: 28px; color: var(--muted); font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .card-ticket span { padding: 4px 8px; border: 1px solid var(--border); }
-.card-preview h2 { font-size: 27px; }
+.card-preview h3 { margin-bottom: 12px; font-family: var(--display); font-size: 27px; letter-spacing: -.015em; text-transform: uppercase; }
 .card-preview p { color: var(--muted); }
 .mini-chain { display: flex; align-items: center; gap: 0; min-height: 25px; margin-top: auto; }
 .mini-chain span { width: 14px; height: 14px; display: block; border: 2px solid var(--border); border-radius: 50%; background: var(--ink-900); }
@@ -112,6 +119,9 @@ h3 { margin-bottom: 8px; font-size: 18px; }
 .how-it-works li > span { position: absolute; left: 0; top: 20px; color: var(--amber); font-family: var(--display); font-size: 24px; font-weight: 900; }
 .how-it-works h3 { font-family: var(--display); font-size: 24px; text-transform: uppercase; }
 .how-it-works p { color: var(--muted); }
+.limits { max-width: 1300px; padding: 0 clamp(20px, 4vw, 64px) clamp(70px, 9vw, 120px); margin: auto; }
+.limits h2 { max-width: 680px; }
+.limits > p:not(.kicker) { max-width: 68ch; color: var(--muted); }
 
 .breadcrumb { max-width: 1440px; display: flex; gap: 10px; padding: 24px clamp(20px, 4vw, 64px) 0; margin: auto; color: var(--muted); font-size: 14px; }
 .breadcrumb a { min-height: 44px; display: inline-flex; align-items: center; color: var(--cyan); }
@@ -215,6 +225,7 @@ dialog form > div { display: flex; justify-content: flex-end; gap: 10px; margin-
 .legal-page section { padding: 26px 0; border-top: 1px solid var(--border); }
 .legal-page section h2 { font-size: 27px; }
 .legal-page section p { max-width: 68ch; color: var(--muted); }
+.legal-page code { color: var(--amber); }
 .boot-message { padding: 80px; color: var(--muted); text-align: center; }
 
 .site-footer { display: grid; grid-template-columns: 1fr auto; gap: 26px; padding: 42px clamp(20px, 4vw, 64px) calc(42px + env(safe-area-inset-bottom)); color: var(--muted); background: #070b0f; border-top: 1px solid var(--border); }
@@ -241,18 +252,24 @@ dialog form > div { display: flex; justify-content: flex-end; gap: 10px; margin-
 }
 
 @media (max-width: 700px) {
-  .site-header { grid-template-columns: 1fr auto; min-height: 70px; padding: 10px 16px; }
+  .site-header { grid-template-columns: 1fr auto; min-height: 70px; gap: 4px 12px; padding: 8px 16px 6px; }
   .brand span { font-size: 16px; }
-  .site-header nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; justify-content: stretch; padding: 8px max(12px, env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom)); background: #0c1218; border-top: 1px solid var(--border); }
-  .site-header nav a { flex: 1; justify-content: center; }
-  .network-state { font-size: 12px; }
-  main { padding-bottom: 76px; }
-  h1 { font-size: clamp(39px, 13vw, 56px); }
-  .hero { gap: 42px; padding-top: 52px; }
+  .site-header nav { grid-column: 1 / -1; width: 100%; gap: 2px; overflow-x: auto; }
+  .site-header nav a { flex: 1 0 auto; justify-content: center; padding: 5px 8px; font-size: 14px; }
+  .network-state { display: none; }
+  h1 { font-size: clamp(38px, 10vw, 48px); }
+  .hero { gap: 38px; padding-top: 20px; }
+  .hero-copy h1 { margin-bottom: 14px; }
+  .lede { margin-bottom: 20px; font-size: 17px; line-height: 1.45; }
   .hero-art { width: 116%; margin-left: -8%; }
   .hero-art::before { right: 10px; }
   .hero-actions, .shelf-actions, .empty-state > div:last-child { flex-direction: column; }
   .hero-actions .button, .shelf-actions .button { width: 100%; }
+  .action-note { margin-top: 10px; font-size: 14px; line-height: 1.4; }
+  .plain-facts { gap: 2px; margin-top: 14px; font-size: 14px; line-height: 1.4; }
+  .demo-banner { position: relative; align-items: stretch; flex-direction: column; gap: 3px; padding-block: 10px; }
+  .demo-banner > div { margin-top: 6px; }
+  .demo-banner button, .demo-banner a { flex: 1; justify-content: center; }
   .section-heading { align-items: stretch; flex-direction: column; }
   .card-grid, .how-it-works ol { grid-template-columns: 1fr; }
   .how-it-works ol { gap: 22px; }
@@ -280,7 +297,7 @@ dialog form > div { display: flex; justify-content: flex-end; gap: 10px; margin-
   .editor-step label { grid-column: 1 / -1; }
   .editor-step-actions { position: static; grid-column: 1; grid-row: 1; justify-content: flex-end; margin: -12px 0 4px; background: transparent; }
   .form-submit { display: grid; grid-template-columns: 1fr 1fr; }
-  .site-footer { grid-template-columns: 1fr; padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
+  .site-footer { grid-template-columns: 1fr; padding-bottom: calc(42px + env(safe-area-inset-bottom)); }
   .site-footer nav { flex-wrap: wrap; }
   .site-footer small { grid-column: 1; }
   dialog { width: calc(100vw - 28px); }
