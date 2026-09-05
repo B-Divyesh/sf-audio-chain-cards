@@ -2,15 +2,21 @@
 
 ## Result
 
-**PASS — all strict-review findings repaired and live-verified.**
+**PASS — all strict-review findings remain repaired after independent verification 5.**
 
 - Work order: `audio-chain-cards-repair-4`
 - Review base: `9cf26f0da127822c116ee4776b3437d949798b59`
 - Implementation and deployed artifact: `6792d472cba791ef0ae98ceae6a32a578f8431e2`
-- Handoff documentation: the report-only commit containing this file, after the implementation SHA above
+- Prior handoff documentation: `5ce4ce5ca539ca9680fcad41d512ad5f35888046`
 - Deployment: `409b02c8-67f3-4d74-b898-7dc747ddce56`
 - Live URL: <https://audio-chain-cards.sociobot.in>
 - Verified: 5 September 2026 UTC
+
+## Independent verification 5
+
+Work order `audio-chain-cards-verify-5` independently reviewed implementation SHA `6792d472cba791ef0ae98ceae6a32a578f8431e2` and the prior documentation SHA `5ce4ce5ca539ca9680fcad41d512ad5f35888046`.
+
+**PASS — 0 findings and 0 untested public claims.** `npm ci`, all 11 separately invoked claim commands, `npm test` (9 unit/config and 54 browser checks), and `npm run build` passed. Fresh desktop and phone live checks confirmed the job/audience/first action, sample isolation/reset, valid and invalid timestamp paths, legal routes, keyboard skip behavior, reduced motion, privacy, offline reload, and the designed HTTP 404. All 21 public build files match live byte-for-byte. Live Axe had zero violations on root, demo, Privacy, Terms, and 404. The live Lighthouse report scored 99 Performance and 100 for Accessibility, Best Practices, and SEO. Full evidence and finding dispositions are in `.factory/verification-5.md`; external evidence is in `/work/.evidence/verify-5/`.
 
 ## What changed
 
