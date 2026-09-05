@@ -1,16 +1,19 @@
-# Chain Cards verification handoff — PASS
-
-- Candidate verified: `c3f525ca325ba19fc75009e3b8c64b732364a564`
-- Live URL: <https://audio-chain-cards.sociobot.in>
-- Verification date: 2026-08-28 UTC
-- Work order: `audio-chain-cards-verify-4`
-- Detailed evidence: [.factory/verification-4.md](verification-4.md)
+# Review handoff: Repeat and share audio repair sequences
 
 ## Result
 
-**PASS.** The fresh production build exactly matches the live static PWA. No acceptance-blocking defects remain.
+**FAIL — 8 findings and 10 untested public claims.**
 
-## How it was verified
+- Implementation reviewed: `c3f525ca325ba19fc75009e3b8c64b732364a564`
+- Documentation SHA before this report: `35b61b7891bf56a4b9fda438091bf8ba6640e63e`
+- Live URL: <https://audio-chain-cards.sociobot.in>
+- Detailed report: [.factory/review-1.md](review-1.md)
+
+No product code was changed. This work order only adds review evidence and updates this handoff.
+
+## Verification completed
+
+From a fresh clone:
 
 ```sh
 npm ci
@@ -18,12 +21,18 @@ npm test
 npm run build
 ```
 
-- `npm test`: 9 Vitest checks and 20 Desktop Chromium/Pixel 5 Playwright checks passed.
-- Exact build passed and emitted `dist/`; app JS is 34.18 kB (11.40 kB gzip), CSS is 22.46 kB (5.66 kB gzip), and the mobile hero is 35.87 kB.
-- All 15 served product files match fresh live downloads byte-for-byte. Root, Privacy, and Terms passed console/semantic smoke checks.
-- Live end-to-end checks covered starter-card completion/persistence, invalid and boundary timestamp recovery, source-safe FFmpeg command generation, portable-card validation, local blob audio attachment/detach, no third-party requests/cookies, keyboard skip navigation, 390px layout, reduced motion, Axe serious/critical findings, and Lighthouse.
-- The live PWA is manifest-installable, controls the saved workbench, reloads it offline with its offline banner, and its update toast/skip-waiting lifecycle passed in an isolated exact-build simulation.
+The commands passed with 9 unit checks and 20 desktop/mobile E2E checks. The build emitted `dist/`. All 15 live product files matched the fresh build byte for byte.
 
-## Known gaps / next steps
+Fresh desktop and Pixel 5 reviews covered the populated starter, local storage, normal/invalid/boundary labels, source-safe paths, malformed import recovery, local audio attach/detach, persistence, keyboard, focus, phone layout, Axe, reduced motion, privacy requests, links, legal pages, offline reload, service-worker update, route titles, and unknown URLs.
 
-No product gaps block release. Consider adding a restrictive CSP and Permissions-Policy header and serving `manifest.webmanifest` with a manifest-specific MIME type as optional hosting hardening.
+Lighthouse reported Performance 100, Accessibility 100, Best Practices 100, and SEO 100. FCP was 1.0 s, LCP 1.1 s, total blocking time 0 ms, CLS 0, and transfer size 55 KiB.
+
+## Work required before PASS
+
+1. Add an isolated `/demo` with a persistent sample label, reset, and exit to real data.
+2. Add `.factory/claims.json` and one tagged demo-based test for each public promise.
+3. Keep both landing actions above the fixed phone navigation and rewrite the first screen in plain words.
+4. Add real app routes, route titles and announcements, and a designed HTTP 404 page.
+5. Complete metadata, sitemap, route-wide header/footer structure, CSP, Permissions-Policy, and manifest MIME handling.
+
+The earlier timestamp, import-validation, target-size, landmark, cache, legal-page, skip-link, offline, and update defects are fixed. The previously noted missing policies and generic manifest MIME remain open and are findings in this review.
